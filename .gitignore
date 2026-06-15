@@ -1,0 +1,38 @@
+# Local architecture/notes — kept for reference, not part of the repo
+ARCHITECTURE.md
+
+# Claude Code artifacts — local tooling only
+.claudeignore
+.mcp.json
+.claude/
+
+# Kotlin compiler logs
+.kotlin/
+
+# Built output — covers root and all submodules
+**/build/
+
+# Gradle
+.gradle/
+
+# Android Studio / IntelliJ — ignore everything, re-allow only shared config
+.idea/
+!.idea/runConfigurations/
+!.idea/inspectionProfiles/
+*.iml
+
+# Local machine config (contains SDK path + API keys — never commit)
+local.properties
+
+# macOS
+.DS_Store
+
+# Keystore / signing keys — never commit these
+*.keystore
+*.jks
+*.p12
+
+# Captures / profiling
+/captures
+.externalNativeBuild
+.cxx

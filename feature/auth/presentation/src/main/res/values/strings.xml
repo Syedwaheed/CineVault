@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_tagline">EVERY STORY · EVERY FRAME</string>
+    <string name="login_continue_with_tmdb">Continue with TMDB</string>
+    <string name="login_connecting">Connecting…</string>
+    <string name="login_signing_in">Signing in…</string>
+    <string name="login_approval_title">Approve in your browser</string>
+    <string name="login_approval_body">A browser window has opened. Sign in with your TMDB account and approve CineVault access, then return here.</string>
+    <string name="login_i_approved">I\'ve approved it</string>
+    <string name="login_cancel">Cancel</string>
+    <string name="login_error_title">Something went wrong</string>
+    <string name="login_try_again">Try again</string>
+    <string name="login_powered_by_tmdb">Powered by TMDB</string>
+</resources>
