@@ -55,6 +55,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.edu.core.domain.movie.Movie
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import com.edu.core.presentation.designsystem.CineVaultAnimation
 import com.edu.core.presentation.designsystem.CineVaultRadius
 import com.edu.core.presentation.designsystem.CineVaultSpacing
@@ -117,12 +120,11 @@ private fun Movie.backdropUrl(imageBaseUrl: String) =
 fun HomeScreen(
     onNavigateToDetail: (Int) -> Unit,
     onNavigateToSearch: () -> Unit,
-    onRequireAuth: () -> Unit,
     imageBaseUrl: String,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
-    viewModel: HomeViewModel = koinViewModel(),
 ) {
+    val viewModel: HomeViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ObserveAsEvent(viewModel.uiEffect) { effect ->
@@ -177,7 +179,7 @@ fun HomeContent(
                     modifier = Modifier.padding(end = CineVaultSpacing.sm),
                 )
             },
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = CvBg,
                 scrolledContainerColor = CvBg,
             ),
@@ -199,6 +201,14 @@ private fun LoadingContent(contentPadding: PaddingValues) {
         contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
     ) {
         item { HeroShimmer() }
+        item {
+            Spacer(modifier = Modifier.height(CineVaultSpacing.xxl))
+            ShimmerSection()
+        }
+        item {
+            Spacer(modifier = Modifier.height(CineVaultSpacing.xxl))
+            ShimmerSection()
+        }
         item {
             Spacer(modifier = Modifier.height(CineVaultSpacing.xxl))
             ShimmerSection()
@@ -252,7 +262,7 @@ private fun SuccessContent(
     onAction: (HomeAction) -> Unit,
     contentPadding: PaddingValues,
 ) {
-    val heroMovies = state.trendingMovies.take(HERO_COUNT)
+    val heroMovies = state.trendingMovies.take(HERO_COUNT).toImmutableList()
 
     LazyColumn(
         contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
@@ -289,6 +299,26 @@ private fun SuccessContent(
             )
         }
 
+        item {
+            Spacer(modifier = Modifier.height(CineVaultSpacing.xxl))
+            MovieSection(
+                title = "Now Playing",
+                movies = state.nowPlayingMovies,
+                imageBaseUrl = imageBaseUrl,
+                onMovieClick = { onAction(HomeAction.MovieClicked(it)) },
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(CineVaultSpacing.xxl))
+            MovieSection(
+                title = "Upcoming",
+                movies = state.upcomingMovies,
+                imageBaseUrl = imageBaseUrl,
+                onMovieClick = { onAction(HomeAction.MovieClicked(it)) },
+            )
+        }
+
         item { Spacer(modifier = Modifier.height(CineVaultSpacing.xl)) }
     }
 }
@@ -297,7 +327,7 @@ private fun SuccessContent(
 
 @Composable
 private fun HeroCarousel(
-    movies: List<Movie>,
+    movies: ImmutableList<Movie>,
     imageBaseUrl: String,
     onMovieClick: (Int) -> Unit,
 ) {
@@ -483,7 +513,7 @@ private fun MetaDot() {
 @Composable
 private fun MovieSection(
     title: String,
-    movies: List<Movie>,
+    movies: ImmutableList<Movie>,
     imageBaseUrl: String,
     onMovieClick: (Int) -> Unit,
 ) {
@@ -579,7 +609,7 @@ private fun ErrorContent(
 
 // ─── Previews ─────────────────────────────────────────────────────────────────
 
-private val previewMovies = listOf(
+private val previewMovies = persistentListOf(
     Movie(
         id = 1, title = "Glass Cathedral", overview = "An architect designs a building that doesn't exist.",
         posterPath = null, backdropPath = null, releaseDate = "2025-01-15",
@@ -618,9 +648,11 @@ private fun HomeSuccessEmptyPreview() {
     CineVaultTheme {
         HomeContent(
             uiState = HomeUiState.Success(
-                trendingMovies = emptyList(),
-                topRatedMovies = emptyList(),
-                syncState = SyncState.Syncing,
+                trendingMovies   = persistentListOf(),
+                topRatedMovies   = persistentListOf(),
+                nowPlayingMovies = persistentListOf(),
+                upcomingMovies   = persistentListOf(),
+                syncState        = SyncState.Syncing,
             ),
             imageBaseUrl = "",
             onAction = {},
@@ -634,9 +666,11 @@ private fun HomeSuccessPreview() {
     CineVaultTheme {
         HomeContent(
             uiState = HomeUiState.Success(
-                trendingMovies = previewMovies,
-                topRatedMovies = previewMovies.sortedByDescending { it.voteAverage },
-                syncState = SyncState.Idle,
+                trendingMovies   = previewMovies,
+                topRatedMovies   = previewMovies.sortedByDescending { it.voteAverage }.toImmutableList(),
+                nowPlayingMovies = previewMovies.take(2).toImmutableList(),
+                upcomingMovies   = previewMovies.reversed().toImmutableList(),
+                syncState        = SyncState.Idle,
             ),
             imageBaseUrl = "",
             onAction = {},

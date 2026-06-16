@@ -15,6 +15,9 @@ interface MovieDao {
     @Query("SELECT * FROM movies WHERE id = :id")
     fun getMovieById(id: Int): Flow<MovieEntity?>
 
+    @Query("SELECT * FROM movies WHERE categories LIKE '%' || :category || '%' ORDER BY popularity DESC")
+    fun getMoviesByCategory(category: String): Flow<List<MovieEntity>>
+
     @Upsert
     suspend fun upsertMovies(movies: List<MovieEntity>)
 

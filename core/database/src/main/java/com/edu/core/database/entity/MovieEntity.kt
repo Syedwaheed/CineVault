@@ -1,5 +1,6 @@
 package com.edu.core.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -20,4 +21,5 @@ data class MovieEntity(
     val genreIds: List<Int>,
     val runtime: Int = 0,
     val isAvailableOffline: Boolean = false,
+    @ColumnInfo(defaultValue = "") val categories: String = "",
 )

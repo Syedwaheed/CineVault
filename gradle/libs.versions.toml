@@ -32,6 +32,8 @@ timber = "5.0.1"
 
 #Coroutine
 coroutine = "1.10.2"
+#kotlinx-collections-immutable
+kotlinx-collections-immutable = "0.3.8"
 #kotlinx-serialization
 kotlinx-serialization = "1.9.0"
 #tink
@@ -129,6 +131,7 @@ timber ={ module = "com.jakewharton.timber:timber", version.ref = "timber" }
 #Coroutine
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutine" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 
 #tink
 androidx-google-tink = {group = "com.google.crypto.tink", name ="tink-android", version.ref = "tink"}

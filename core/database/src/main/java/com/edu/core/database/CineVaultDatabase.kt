@@ -1,5 +1,6 @@
 package com.edu.core.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -15,8 +16,9 @@ import com.edu.core.database.entity.WatchlistEntity
 
 @Database(
     entities = [MovieEntity::class, WatchlistEntity::class, ActorEntity::class, UserEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true,
+    autoMigrations = [AutoMigration(from = 2, to = 3)],
 )
 @TypeConverters(IntListConverter::class)
 abstract class CineVaultDatabase : RoomDatabase() {

@@ -5,10 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.edu.core.domain.movie.SyncStatus
 import com.edu.core.presentation.designsystem.components.SyncState
 import com.edu.core.presentation.ui.UiText
+import com.edu.feature.home.domain.GetNowPlayingMoviesUseCase
 import com.edu.feature.home.domain.GetTopRatedMoviesUseCase
 import com.edu.feature.home.domain.GetTrendingMoviesUseCase
+import com.edu.feature.home.domain.GetUpcomingMoviesUseCase
 import com.edu.feature.home.domain.SyncMoviesUseCase
 import com.edu.core.domain.util.NoParams
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,6 +25,8 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val getTrendingMovies: GetTrendingMoviesUseCase,
     private val getTopRatedMovies: GetTopRatedMoviesUseCase,
+    private val getNowPlayingMovies: GetNowPlayingMoviesUseCase,
+    private val getUpcomingMovies: GetUpcomingMoviesUseCase,
     private val syncMovies: SyncMoviesUseCase,
 ) : ViewModel() {
 
@@ -55,12 +60,16 @@ class HomeViewModel(
             combine(
                 getTrendingMovies(NoParams),
                 getTopRatedMovies(NoParams),
+                getNowPlayingMovies(NoParams),
+                getUpcomingMovies(NoParams),
                 _syncState,
-            ) { trending, topRated, syncState ->
+            ) { trending, topRated, nowPlaying, upcoming, syncState ->
                 HomeUiState.Success(
-                    trendingMovies = trending,
-                    topRatedMovies = topRated,
-                    syncState = syncState,
+                    trendingMovies   = trending.toImmutableList(),
+                    topRatedMovies   = topRated.toImmutableList(),
+                    nowPlayingMovies = nowPlaying.toImmutableList(),
+                    upcomingMovies   = upcoming.toImmutableList(),
+                    syncState        = syncState,
                 ) as HomeUiState
             }
                 .catch { e ->
@@ -74,9 +83,9 @@ class HomeViewModel(
         viewModelScope.launch {
             syncMovies(NoParams).collect { status ->
                 _syncState.value = when (status) {
-                    SyncStatus.Idle -> SyncState.Idle
-                    SyncStatus.Syncing -> SyncState.Syncing
-                    SyncStatus.Success -> SyncState.Idle
+                    SyncStatus.Idle     -> SyncState.Idle
+                    SyncStatus.Syncing  -> SyncState.Syncing
+                    SyncStatus.Success  -> SyncState.Idle
                     is SyncStatus.Error -> SyncState.Error
                 }
             }
