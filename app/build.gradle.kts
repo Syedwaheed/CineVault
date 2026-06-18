@@ -17,7 +17,7 @@ android {
 
 firebaseAppDistributionDefault {
     releaseNotes = System.getenv("FIREBASE_RELEASE_NOTES") ?: "Local build"
-    groups = System.getenv("FIREBASE_TESTER_GROUPS") ?: "internal-testers"
+    groups = System.getenv("FIREBASE_TESTER_GROUPS") ?: "internal-tester"
 }
 
 dependencies {
