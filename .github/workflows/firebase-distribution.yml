@@ -1,0 +1,94 @@
+name: Firebase App Distribution
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build variant to distribute'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+          - debug
+          - release
+      release_notes:
+        description: 'Release notes shown to testers'
+        required: false
+        default: ''
+      tester_groups:
+        description: 'Firebase tester groups (comma-separated)'
+        required: false
+        default: 'internal-testers'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  distribute:
+    name: Distribute (${{ github.event.inputs.build_type || 'debug' }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Setup local.properties
+        run: |
+          echo "API_READ_ACCESS_TOKEN=${{ secrets.TMDB_API_READ_ACCESS_TOKEN }}" >> local.properties
+          sed -i '/org.gradle.java.home/d' gradle.properties
+
+      - name: Write google-services.json
+        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > app/google-services.json
+
+      - name: Write Firebase service account credentials
+        run: echo '${{ secrets.MOVIE_FIREBASE_SERVICE_ACCOUNT }}' > firebase-service-account.json
+
+      # ── Debug distribution ──────────────────────────────────────────────────
+      - name: Distribute debug APK
+        if: github.event.inputs.build_type != 'release'
+        env:
+          FIREBASE_APP_ID: ${{ secrets.MOVIE_FIREBASE_APP_ID }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-service-account.json
+          FIREBASE_RELEASE_NOTES: ${{ github.event.inputs.release_notes || format('Build {0} — {1}', github.run_number, github.sha) }}
+          FIREBASE_TESTER_GROUPS: ${{ github.event.inputs.tester_groups || 'internal-testers' }}
+        run: ./gradlew appDistributionUploadDebug --stacktrace
+
+      # ── Release distribution ────────────────────────────────────────────────
+      - name: Decode keystore
+        if: github.event.inputs.build_type == 'release'
+        run: echo "${{ secrets.KEYSTORE_FILE_BASE64 }}" | base64 --decode > app/release.keystore
+
+      - name: Distribute release APK
+        if: github.event.inputs.build_type == 'release'
+        env:
+          FIREBASE_APP_ID: ${{ secrets.MOVIE_FIREBASE_APP_ID }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-service-account.json
+          FIREBASE_RELEASE_NOTES: ${{ github.event.inputs.release_notes || format('Release build {0} — {1}', github.run_number, github.sha) }}
+          FIREBASE_TESTER_GROUPS: ${{ github.event.inputs.tester_groups || 'internal-testers' }}
+        run: |
+          ./gradlew assembleRelease appDistributionUploadRelease \
+            -Pandroid.injected.signing.store.file=${{ github.workspace }}/app/release.keystore \
+            -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_STORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=${{ secrets.KEYSTORE_KEY_ALIAS }} \
+            -Pandroid.injected.signing.key.password=${{ secrets.KEYSTORE_KEY_PASSWORD }} \
+            --stacktrace
+
+      - name: Cleanup sensitive files
+        if: always()
+        run: |
+          rm -f firebase-service-account.json
+          rm -f app/google-services.json
+          rm -f app/release.keystore

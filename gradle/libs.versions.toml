@@ -40,12 +40,13 @@ kotlinx-serialization = "1.9.0"
 tink = "1.20.0"
 dataStore = "1.2.0"
 
-firebase-bom = "34.9.0"
+firebase-bom = "34.15.0"
 fbAppDistrtribution = "4.0.1"
 
 coreSplashscreen = "1.2.0"
 browser = "1.8.0"
 youtubePlayer = "12.1.2"
+googleServicesVersion = "4.5.0"
 
 #Project versions
 projectApplicationId = "com.edu.movieapplication"
@@ -147,6 +148,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 room = { id = "androidx.room", version.ref = "room" }
 firebase-distribution = {id = "com.google.firebase.appdistribution", version.ref = "fbAppDistrtribution"}
+google-services = {id = "com.google.gms.google-services", version.ref = "googleServicesVersion"}
 
 
 movie-android-application = { id = "movie.android.application",version ="unspecified" }

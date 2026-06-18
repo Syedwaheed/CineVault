@@ -24,6 +24,9 @@ ARCHITECTURE.md
 # Local machine config (contains SDK path + API keys — never commit)
 local.properties
 
+# Firebase — contains project ID and API keys — injected by CI from secrets
+google-services.json
+
 # macOS
 .DS_Store
 

@@ -9,11 +9,14 @@ plugins {
 android {
     namespace = "com.edu.movieapplication"
 
-
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+}
 
+firebaseAppDistribution {
+    releaseNotes = System.getenv("FIREBASE_RELEASE_NOTES") ?: "Local build"
+    groups = System.getenv("FIREBASE_TESTER_GROUPS") ?: "internal-testers"
 }
 
 dependencies {
@@ -58,6 +61,9 @@ dependencies {
 
     //Timber
     implementation(libs.timber)
+
+    //Firebase
+    implementation(platform(libs.firebase.bom))
 
 
     implementation(projects.core.data)
