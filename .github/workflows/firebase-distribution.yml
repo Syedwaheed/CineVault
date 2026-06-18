@@ -20,7 +20,7 @@ on:
       tester_groups:
         description: 'Firebase tester groups (comma-separated)'
         required: false
-        default: 'internal-testers'
+        default: 'internal-tester'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -71,7 +71,7 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.MOVIE_FIREBASE_APP_ID }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-service-account.json
           FIREBASE_RELEASE_NOTES: ${{ github.event.inputs.release_notes || format('Build {0} — {1}', github.run_number, github.sha) }}
-          FIREBASE_TESTER_GROUPS: ${{ github.event.inputs.tester_groups || 'internal-testers' }}
+          FIREBASE_TESTER_GROUPS: ${{ github.event.inputs.tester_groups || 'internal-tester' }}
         run: ./gradlew appDistributionUploadDebug --stacktrace
 
       # ── Release distribution ────────────────────────────────────────────────
@@ -85,7 +85,7 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.MOVIE_FIREBASE_APP_ID }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-service-account.json
           FIREBASE_RELEASE_NOTES: ${{ github.event.inputs.release_notes || format('Release build {0} — {1}', github.run_number, github.sha) }}
-          FIREBASE_TESTER_GROUPS: ${{ github.event.inputs.tester_groups || 'internal-testers' }}
+          FIREBASE_TESTER_GROUPS: ${{ github.event.inputs.tester_groups || 'internal-tester' }}
         run: |
           ./gradlew assembleRelease appDistributionUploadRelease \
             -Pandroid.injected.signing.store.file=${{ github.workspace }}/app/release.keystore \
