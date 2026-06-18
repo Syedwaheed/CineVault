@@ -1,6 +1,8 @@
 package com.edu.convention
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
@@ -11,16 +13,30 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 internal fun Project.configureKotlinAndroid(
-    commonExtension: CommonExtension<*, *, *, *, *,*>
+    commonExtension: CommonExtension
 ){
     commonExtension.apply{
-        compileSdk = libs.findVersion("projectCompileSdk").get().toString().toInt()
-        defaultConfig.minSdk = libs.findVersion("projectMinSdk").get().toString().toInt()
-        compileOptions{
-            isCoreLibraryDesugaringEnabled = true
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
+        when(this) {
+            is ApplicationExtension -> {
+                compileSdk = libs.findVersion("projectCompileSdk").get().toString().toInt()
+                defaultConfig.minSdk = libs.findVersion("projectMinSdk").get().toString().toInt()
+                compileOptions{
+                    isCoreLibraryDesugaringEnabled = true
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
 
+                }
+            }
+            is LibraryExtension -> {
+                compileSdk = libs.findVersion("projectCompileSdk").get().toString().toInt()
+                defaultConfig.minSdk = libs.findVersion("projectMinSdk").get().toString().toInt()
+                compileOptions{
+                    isCoreLibraryDesugaringEnabled = true
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
+
+                }
+            }
         }
     }
     configureKotlin()

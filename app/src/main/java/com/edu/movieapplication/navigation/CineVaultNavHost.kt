@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.entryProvider
@@ -206,6 +207,7 @@ fun CineVaultNavHost() {
         }  // SharedTransitionLayout
     }
 }
+
 
 // ─── Glassmorphic bottom navigation bar ──────────────────────────────────────
 
@@ -397,5 +399,30 @@ private fun CineVaultBottomBar(
                 }
             }
         }
+    }
+}
+// ─── Previews ────────────────────────────────────────────────────────────────
+
+@Preview(showBackground = true, backgroundColor = 0xFF0A0A0A)
+@Composable
+private fun CineVaultBottomBarPreview() {
+    CineVaultTheme {
+        CineVaultBottomBar(
+            currentRoute = HomeRoute,
+            onTabSelected = {},
+            isCollapsed = false
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF0A0A0A)
+@Composable
+private fun CineVaultBottomBarCollapsedPreview() {
+    CineVaultTheme {
+        CineVaultBottomBar(
+            currentRoute = HomeRoute,
+            onTabSelected = {},
+            isCollapsed = true
+        )
     }
 }

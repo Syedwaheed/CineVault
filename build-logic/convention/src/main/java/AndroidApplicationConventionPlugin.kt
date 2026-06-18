@@ -12,7 +12,6 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
         target.run {
             with(pluginManager) {
                 apply("com.android.application")
-                apply(("org.jetbrains.kotlin.android"))
                 apply("com.google.gms.google-services")
             }
 

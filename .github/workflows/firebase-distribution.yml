@@ -61,7 +61,11 @@ jobs:
         run: echo "$MOVIE_FIREBASE_SERVICE_ACCOUNT" > firebase-service-account.json
 
       # ── Debug distribution ──────────────────────────────────────────────────
-      - name: Distribute debug APK
+      - name: Build debug APK
+        if: github.event.inputs.build_type != 'release'
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Upload debug APK to Firebase
         if: github.event.inputs.build_type != 'release'
         env:
           FIREBASE_APP_ID: ${{ secrets.MOVIE_FIREBASE_APP_ID }}

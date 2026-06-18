@@ -9,44 +9,42 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 
 internal fun Project.configureBuildType(
-    commonExtension: CommonExtension<*, *, *, *, *,*>,
+    commonExtension: CommonExtension,
     extensionType: ExtensionType
 ){
-    commonExtension.run {
+    when(commonExtension) {
+        is ApplicationExtension -> commonExtension.buildFeatures.buildConfig = true
+        is LibraryExtension -> commonExtension.buildFeatures.buildConfig = true
+    }
 
-        buildFeatures{
-            buildConfig = true
-        }
-        val apiReadAccessToken = gradleLocalProperties(rootDir,providers).getProperty("API_READ_ACCESS_TOKEN")
-        when(extensionType){
-            ExtensionType.APPLICATION ->{
-                extensions.configure<ApplicationExtension>{
+    val apiReadAccessToken = gradleLocalProperties(rootDir,providers).getProperty("API_READ_ACCESS_TOKEN")
+    when(extensionType){
+        ExtensionType.APPLICATION ->{
+            extensions.configure<ApplicationExtension>{
 
-                    buildTypes{
-                        debug {
-                            configureDebugBuildType(apiReadAccessToken)
-                        }
-                        release {
-                            configureReleaseBuildType(commonExtension,apiReadAccessToken)
-                        }
+                buildTypes{
+                    debug {
+                        configureDebugBuildType(apiReadAccessToken)
                     }
-                }
-            }
-            ExtensionType.LIBRARY -> {
-                extensions.configure<LibraryExtension>{
-
-                    buildTypes{
-                        debug {
-                            configureDebugBuildType(apiReadAccessToken)
-                        }
-                        release {
-                            configureReleaseBuildType(commonExtension,apiReadAccessToken)
-                        }
+                    release {
+                        configureReleaseBuildType(commonExtension,apiReadAccessToken)
                     }
                 }
             }
         }
+        ExtensionType.LIBRARY -> {
+            extensions.configure<LibraryExtension>{
 
+                buildTypes{
+                    debug {
+                        configureDebugBuildType(apiReadAccessToken)
+                    }
+                    release {
+                        configureReleaseBuildType(commonExtension,apiReadAccessToken)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -56,15 +54,23 @@ private fun BuildType.configureDebugBuildType(apiReadAccessToken:String?){
     buildConfigField("String","IMAGE_BASE_URL","\"https://image.tmdb.org/t/p/\"")
 }
 private fun BuildType.configureReleaseBuildType(
-    commonExtension: CommonExtension<*,*,*,*,*,*>,
+    commonExtension: CommonExtension,
     apiReadAccessToken:String?
 ){
     buildConfigField("String","API_READ_ACCESS_TOKEN","\"$apiReadAccessToken\"")
     buildConfigField("String","BASE_URL","\"https://api.themoviedb.org/3/\"")
     buildConfigField("String","IMAGE_BASE_URL","\"https://image.tmdb.org/t/p/\"")
     isMinifyEnabled = true
-    proguardFiles(
-        commonExtension.getDefaultProguardFile("proguard-android-optimize.txt"),
-        "proguard-rules.pro"
-    )
+    
+    val proguardFile = when(commonExtension) {
+        is ApplicationExtension -> commonExtension.getDefaultProguardFile("proguard-android-optimize.txt")
+        is LibraryExtension -> commonExtension.getDefaultProguardFile("proguard-android-optimize.txt")
+        else -> null
+    }
+    
+    if (proguardFile != null) {
+        proguardFiles(proguardFile, "proguard-rules.pro")
+    } else {
+        proguardFiles("proguard-rules.pro")
+    }
 }
