@@ -1,9 +1,10 @@
+import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
+
 plugins {
     alias(libs.plugins.movie.android.application.compose)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.movie.jvm.ktor)
     alias(libs.plugins.firebase.distribution)
-
 }
 
 android {
