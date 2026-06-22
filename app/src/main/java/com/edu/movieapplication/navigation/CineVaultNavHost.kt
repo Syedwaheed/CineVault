@@ -70,6 +70,9 @@ import com.edu.core.presentation.designsystem.CineVaultTheme
 import com.edu.core.presentation.designsystem.CvAmber
 import com.edu.core.presentation.designsystem.CvAmberSoft
 import com.edu.core.presentation.designsystem.CvTextMute
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.edu.core.presentation.designsystem.LocalAnimatedVisibilityScope
 import com.edu.core.presentation.designsystem.LocalSharedTransitionScope
 import com.edu.feature.detail.presentation.DetailScreen
 import com.edu.feature.home.presentation.HomeScreen
@@ -136,26 +139,32 @@ fun CineVaultNavHost() {
                 entryProvider = entryProvider {
 
                     entry<HomeRoute> {
-                        HomeScreen(
-                            contentPadding = paddingValues,
-                            imageBaseUrl = networkConfig.imageBaseUrl,
-                            onNavigateToDetail = { movieId ->
-                                navigator.push(DetailRoute(movieId))
-                            },
-                            onNavigateToSearch = {
-                                navigator.selectTab(SearchRoute)
-                            },
-                        )
+                        val animScope = LocalNavAnimatedContentScope.current as? AnimatedVisibilityScope
+                        CompositionLocalProvider(LocalAnimatedVisibilityScope provides animScope) {
+                            HomeScreen(
+                                contentPadding = paddingValues,
+                                imageBaseUrl = networkConfig.imageBaseUrl,
+                                onNavigateToDetail = { movieId ->
+                                    navigator.push(DetailRoute(movieId))
+                                },
+                                onNavigateToSearch = {
+                                    navigator.selectTab(SearchRoute)
+                                },
+                            )
+                        }
                     }
 
                     entry<SearchRoute> {
-                        SearchDestination(
-                            imageBaseUrl = networkConfig.imageBaseUrl,
-                            contentPadding = paddingValues,
-                            onNavigateToDetail = { movieId ->
-                                navigator.push(DetailRoute(movieId))
-                            },
-                        )
+                        val animScope = LocalNavAnimatedContentScope.current as? AnimatedVisibilityScope
+                        CompositionLocalProvider(LocalAnimatedVisibilityScope provides animScope) {
+                            SearchDestination(
+                                imageBaseUrl = networkConfig.imageBaseUrl,
+                                contentPadding = paddingValues,
+                                onNavigateToDetail = { movieId ->
+                                    navigator.push(DetailRoute(movieId))
+                                },
+                            )
+                        }
                     }
 
                     entry<WatchlistRoute> {
@@ -182,15 +191,18 @@ fun CineVaultNavHost() {
                     }
 
                     entry<DetailRoute> { key ->
-                        DetailScreen(
-                            movieId = key.movieId,
-                            imageBaseUrl = networkConfig.imageBaseUrl,
-                            onNavigateBack = { navigator.goBack() },
-                            onNavigateToDetail = { movieId -> navigator.push(DetailRoute(movieId)) },
-                            onRequireAuth = {
-                                navigator.push(LoginRoute(redirectToKey = DetailRoute(key.movieId)))
-                            },
-                        )
+                        val animScope = LocalNavAnimatedContentScope.current as? AnimatedVisibilityScope
+                        CompositionLocalProvider(LocalAnimatedVisibilityScope provides animScope) {
+                            DetailScreen(
+                                movieId = key.movieId,
+                                imageBaseUrl = networkConfig.imageBaseUrl,
+                                onNavigateBack = { navigator.goBack() },
+                                onNavigateToDetail = { movieId -> navigator.push(DetailRoute(movieId)) },
+                                onRequireAuth = {
+                                    navigator.push(LoginRoute(redirectToKey = DetailRoute(key.movieId)))
+                                },
+                            )
+                        }
                     }
 
                     entry<LoginRoute> { key ->

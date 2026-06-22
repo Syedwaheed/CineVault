@@ -40,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
@@ -83,7 +84,7 @@ import com.edu.core.presentation.designsystem.components.shimmerEffect
 import com.edu.core.presentation.designsystem.icon.search_image
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.edu.core.presentation.designsystem.LocalAnimatedVisibilityScope
 import com.edu.core.presentation.ui.ObserveAsEvent
 import com.edu.core.presentation.ui.UiText
 import kotlinx.coroutines.delay
@@ -265,6 +266,7 @@ private fun SuccessContent(
     val heroMovies = state.trendingMovies.take(HERO_COUNT).toImmutableList()
 
     LazyColumn(
+        modifier = Modifier.testTag("home_content"),
         contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
     ) {
         item {
@@ -518,8 +520,7 @@ private fun MovieSection(
     onMovieClick: (Int) -> Unit,
 ) {
     val sharedTransitionScope = LocalSharedTransitionScope.current
-    // LocalNavAnimatedContentScope defaults to null outside NavDisplay entries (e.g. previews)
-    val animatedContentScope = LocalNavAnimatedContentScope.current as? AnimatedVisibilityScope
+    val animatedContentScope = LocalAnimatedVisibilityScope.current
 
     Column {
         SectionHeader(title = title)

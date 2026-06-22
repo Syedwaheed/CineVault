@@ -44,7 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.edu.core.presentation.designsystem.LocalAnimatedVisibilityScope
 import com.edu.core.domain.movie.Movie
 import com.edu.core.presentation.designsystem.CineVaultAnimation
 import com.edu.core.presentation.designsystem.CineVaultRadius
@@ -321,7 +321,7 @@ private fun ResultsGrid(
     modifier: Modifier = Modifier,
 ) {
     val sharedTransitionScope = LocalSharedTransitionScope.current
-    val animatedContentScope = LocalNavAnimatedContentScope.current as? AnimatedVisibilityScope
+    val animatedContentScope = LocalAnimatedVisibilityScope.current
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),

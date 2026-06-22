@@ -40,7 +40,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.edu.core.presentation.designsystem.LocalAnimatedVisibilityScope
 import com.edu.core.presentation.designsystem.LocalSharedTransitionScope
 import android.content.Intent
 import android.net.Uri
@@ -161,7 +161,7 @@ fun DetailScreen(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun DetailSuccessContent(
+internal fun DetailSuccessContent(
     state: DetailUiState.Success,
     imageBaseUrl: String,
     onBack: () -> Unit,
@@ -177,7 +177,7 @@ private fun DetailSuccessContent(
     val runtimeText = if (movie.runtime > 0) "${movie.runtime}m" else ""
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
-    val animatedContentScope = LocalNavAnimatedContentScope.current as? AnimatedVisibilityScope
+    val animatedContentScope = LocalAnimatedVisibilityScope.current
 
     Box(modifier = modifier.fillMaxSize()) {
         // ── Scrollable body ──────────────────────────────────────────────────
@@ -413,7 +413,7 @@ private fun DetailSuccessContent(
 // ─── Loading skeleton ──────────────────────────────────────────────────────────
 
 @Composable
-private fun DetailLoadingContent(
+internal fun DetailLoadingContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -484,7 +484,7 @@ private fun DetailLoadingContent(
 // ─── Error state ───────────────────────────────────────────────────────────────
 
 @Composable
-private fun DetailErrorContent(
+internal fun DetailErrorContent(
     message: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,

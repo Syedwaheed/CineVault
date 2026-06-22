@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -109,7 +110,7 @@ fun ProfileScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileContent(
+internal fun ProfileContent(
     uiState: ProfileUiState,
     imageBaseUrl: String,
     snackbarHostState: SnackbarHostState,
@@ -125,10 +126,13 @@ private fun ProfileContent(
             title = { Text("Sign out?") },
             text = { Text("You'll need to sign in again to access your watchlist and profile.") },
             confirmButton = {
-                TextButton(onClick = {
-                    showLogoutDialog = false
-                    onAction(ProfileAction.ConfirmLogout)
-                }) {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                        onAction(ProfileAction.ConfirmLogout)
+                    },
+                    modifier = Modifier.testTag("confirm_logout_button"),
+                ) {
                     Text("Sign out", color = CvDanger)
                 }
             },
